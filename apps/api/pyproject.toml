@@ -1,0 +1,55 @@
+[project]
+name = "aicommerce-api"
+version = "0.1.0"
+description = "AI Commerce — FastAPI modular monolith (fundação, Fase A)"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.32",
+  "sqlalchemy>=2.0.36",
+  "psycopg[binary]>=3.2",
+  "alembic>=1.14",
+  "pydantic>=2.9",
+  "pydantic-settings>=2.6",
+  "pyjwt>=2.10",
+  "argon2-cffi>=23.1",
+  "pyotp>=2.9",
+  "jsonschema>=4.23",
+  "segno>=1.6.6",
+  "cryptography>=44",
+  "anthropic>=1.0",
+  "pgvector>=0.3",
+  "prometheus-client>=0.21",
+  "pillow>=11",
+  "httpx>=0.28",  # pesquisa web/tendências/frete (o SDK anthropic novo usa httpx2 e não traz mais o httpx)
+]
+
+[project.optional-dependencies]
+# Robô de publicação (serviço `robot`, imagem própria com Chromium): não entra na imagem da API/worker.
+robot = ["playwright>=1.49"]
+
+[dependency-groups]
+dev = ["pytest>=8.3", "ruff>=0.8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aicommerce"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "RUF"]
+ignore = ["B008", "RUF001", "RUF002", "RUF003"]  # B008: padrão Depends() do FastAPI; RUF00x: textos em pt-BR
+
+[tool.ruff.lint.per-file-ignores]
+"src/aicommerce/models.py" = ["RUF012"]
+"migrations/**" = ["E501", "I001", "UP"]

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1E2A3B"/><stop offset="1" stop-color="#10151D"/>
+    </linearGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#bg)"/>
+  <!-- diorama isométrico: piso -->
+  <path d="M512 640 L792 492 L512 344 L232 492 Z" fill="#7DD3B0"/>
+  <path d="M232 492 L512 640 L512 712 L232 564 Z" fill="#4FA586"/>
+  <path d="M512 640 L792 492 L792 564 L512 712 Z" fill="#3B8A6F"/>
+  <!-- paredes da sala -->
+  <path d="M232 492 L512 344 L512 210 L232 358 Z" fill="#88A9F3"/>
+  <path d="M512 344 L792 492 L792 358 L512 210 Z" fill="#6E8FDB"/>
+  <!-- janela -->
+  <path d="M612 380 L712 433 L712 380 L612 327 Z" fill="#F4C47F"/>
+  <!-- mesa e agente -->
+  <path d="M430 520 L530 468 L590 500 L490 552 Z" fill="#F1F5F9"/>
+  <circle cx="420" cy="470" r="34" fill="#F4C47F"/>
+  <path d="M378 560 Q420 486 462 560 Z" fill="#F08B8B"/>
+</svg>

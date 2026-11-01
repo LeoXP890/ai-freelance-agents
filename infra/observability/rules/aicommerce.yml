@@ -1,0 +1,55 @@
+# Alertas do AI Commerce (INF-005) — espelham os alertas operacionais do runbook (docs/runbook/operacao.md §4).
+groups:
+  - name: aicommerce
+    rules:
+      - alert: AicApiDown
+        expr: up{job="aicommerce-api"} == 0
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: API fora do ar (scrape falhando)
+          runbook: "operacao.md §4 — docker compose ps api; logs api"
+      - alert: AicWorkerDown
+        expr: aic_worker_heartbeat_age_seconds > 120
+        for: 1m
+        labels: {severity: critical}
+        annotations:
+          summary: "Worker sem ciclo há {{ $value | humanizeDuration }}: execução, fiscal e webhooks parados"
+          runbook: "operacao.md §4 WORKER_DOWN"
+      - alert: AicDatabaseUnavailable
+        expr: aic_db_up == 0
+        for: 30s
+        labels: {severity: critical}
+        annotations:
+          summary: Banco indisponível para a API (respostas 503 DB_UNAVAILABLE)
+          runbook: "operacao.md §4 — 503 DB_UNAVAILABLE"
+      - alert: AicHttp5xxRate
+        expr: |
+          sum(rate(aic_http_requests_total{status=~"5.."}[5m]))
+            / clamp_min(sum(rate(aic_http_requests_total[5m])), 1e-9) > 0.05
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Mais de 5% de respostas 5xx nos últimos 5 min"}
+      - alert: AicExecutionQueueStuck
+        expr: aic_execution_queue_oldest_seconds > 600
+        for: 5m
+        labels: {severity: warning}
+        annotations: {summary: "Job de execução esperando há mais de 10 min"}
+      - alert: AicWebhookBacklog
+        expr: aic_webhooks_pending > 50
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "Mais de 50 webhooks aguardando processamento"}
+      - alert: AicCriticalBusinessAlerts
+        expr: aic_alerts{severity="CRITICAL"} > 0
+        for: 10m
+        labels: {severity: warning}
+        annotations: {summary: "{{ $value }} alerta(s) operacional(is) crítico(s) abertos há 10 min (ver /alerts)"}
+      - alert: AicEmergencyStopActive
+        expr: aic_emergency_stop_active == 1
+        labels: {severity: info}
+        annotations: {summary: "Kill switch ativo — ver relatório pós-stop"}
+      - alert: AicAiBudget80
+        expr: aic_ai_month_spend_micro_usd > 0.8 * 20000000
+        labels: {severity: warning}
+        annotations: {summary: "Gasto de IA no mês passou de 80% do orçamento (US$ 20 — ajuste ao mudar AIC_AI_MONTHLY_BUDGET)"}

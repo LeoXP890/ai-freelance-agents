@@ -1,0 +1,191 @@
+{
+ "schema_version": 1,
+ "as_of_seq": 100,
+ "mode": "DRY_RUN",
+ "simulated": true,
+ "emergency_stop": false,
+ "agents": [
+  {
+   "agent_id": "atlas",
+   "name": "Atlas",
+   "role": "Direção e planejamento de missões",
+   "room": "ceo",
+   "color": "#8e75fb",
+   "state": "IDLE",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "glasses",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "clara",
+   "name": "Clara",
+   "role": "Compliance jurídico-fiscal (aponta fontes, escalona)",
+   "room": "compliance",
+   "color": "#c77dff",
+   "state": "WORKING",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "glasses",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "dante",
+   "name": "Dante",
+   "role": "Modelagem comercial de dropshipping",
+   "room": "meeting",
+   "color": "#f08a5d",
+   "state": "WAITING_APPROVAL",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "eva",
+   "name": "Eva",
+   "role": "Atendimento ao cliente",
+   "room": "support",
+   "color": "#ff8fab",
+   "state": "PLANNING",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "headset",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "finn",
+   "name": "Finn",
+   "role": "Finanças, custos e ledger",
+   "room": "finance",
+   "color": "#90be6d",
+   "state": "COMPLETED",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "iris",
+   "name": "Iris",
+   "role": "Criativos e conteúdo",
+   "room": "marketing",
+   "color": "#f25f9c",
+   "state": "ERROR",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "hat",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "logan",
+   "name": "Logan",
+   "role": "Logística e SLAs",
+   "room": "store",
+   "color": "#adb5bd",
+   "state": "TOOL_CALL",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "cap",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "luna",
+   "name": "Luna",
+   "role": "Pesquisa de mercado e tendências",
+   "room": "research",
+   "color": "#2bc1b3",
+   "state": "IDLE",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "nexus",
+   "name": "Nexus",
+   "role": "Fornecedores e ofertas",
+   "room": "supply",
+   "color": "#4ea8de",
+   "state": "BLOCKED",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "nova",
+   "name": "Nova",
+   "role": "Loja e canais",
+   "room": "store",
+   "color": "#06d6a0",
+   "state": "IDLE",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "orion",
+   "name": "Orion",
+   "role": "Analytics e experimentos",
+   "room": "finance",
+   "color": "#577590",
+   "state": "COMPLETED",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "glasses",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "pixel",
+   "name": "Pixel",
+   "role": "Mídia paga",
+   "room": "marketing",
+   "color": "#ffb703",
+   "state": "WORKING",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "cap",
+    "skin": "#f1e3d3"
+   }
+  },
+  {
+   "agent_id": "vera",
+   "name": "Vera",
+   "role": "Qualidade e conversão",
+   "room": "research",
+   "color": "#e9c46a",
+   "state": "IDLE",
+   "task_id": null,
+   "last_seq": 100,
+   "appearance": {
+    "accessory": "none",
+    "skin": "#f1e3d3"
+   }
+  }
+ ]
+}

@@ -1,0 +1,146 @@
+{
+  "$defs": {
+    "AgentState": {
+      "enum": [
+        "IDLE",
+        "PLANNING",
+        "WORKING",
+        "TOOL_CALL",
+        "WAITING_APPROVAL",
+        "BLOCKED",
+        "COMPLETED",
+        "ERROR"
+      ],
+      "title": "AgentState",
+      "type": "string"
+    },
+    "EventType": {
+      "enum": [
+        "agent.task.created",
+        "agent.task.started",
+        "agent.task.state_changed",
+        "agent.task.completed",
+        "agent.task.failed",
+        "approval.requested",
+        "approval.decided",
+        "approval.expired",
+        "execution.succeeded",
+        "execution.failed",
+        "budget.reserved",
+        "listing.publish.requested",
+        "listing.publish.confirmed",
+        "order.received",
+        "supplier.stock.stale",
+        "supplier.status_changed",
+        "catalog.product.created",
+        "catalog.product.updated",
+        "listing.prepared",
+        "webhook.received",
+        "order.status_changed",
+        "return.requested",
+        "settlement.imported",
+        "invoice.authorized",
+        "integration.unknown_result",
+        "go_live.revoked",
+        "emergency_stop.activated",
+        "emergency_stop.released",
+        "campaign.created",
+        "campaign.paused"
+      ],
+      "title": "EventType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seq": {
+      "description": "Ordem global monotônica; cliente aplica somente seq > último aplicado",
+      "minimum": 1,
+      "title": "Seq",
+      "type": "integer"
+    },
+    "event_id": {
+      "format": "uuid",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "type": {
+      "$ref": "#/$defs/EventType"
+    },
+    "agent_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Agent Id"
+    },
+    "task_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Task Id"
+    },
+    "state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AgentState"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "timestamp": {
+      "format": "date-time",
+      "title": "Timestamp",
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "DRY_RUN",
+        "LIVE"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "simulated": {
+      "description": "true em DRY_RUN — UI deve exibir 'Simulado'",
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "payload": {
+      "additionalProperties": true,
+      "title": "Payload",
+      "type": "object"
+    }
+  },
+  "required": [
+    "seq",
+    "event_id",
+    "type",
+    "timestamp",
+    "mode",
+    "simulated"
+  ],
+  "title": "OfficeEventV1",
+  "type": "object"
+}

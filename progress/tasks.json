@@ -1,0 +1,157 @@
+{
+  "schema_version": 3,
+  "project": "AI Freelance Agents",
+  "last_generated_at": "2026-11-01T20:08:26+00:00",
+  "tasks": [
+    {
+      "id": "FR-F0",
+      "area": "F0 · Fork limpo",
+      "title": "Repositório público sem segredos, CI verde",
+      "status": "IN_PROGRESS",
+      "description": "Repositório público sem segredos, CI verde",
+      "acceptance": "make test verde; gitleaks sem achados reais",
+      "evidence": [
+        "README.md",
+        "docs/plano/PLANO_FREELANCE_COM_AGENTES.md"
+      ],
+      "notes": "01/11/2026: cópia sem histórico publicada; gitleaks: só valores de simulação/teste. Testes ainda não executados neste repositório.",
+      "validation": {
+        "engineering": "PARTIAL",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "make test verde; gitleaks sem achados reais",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F1",
+      "area": "F1 · Verificador de regras",
+      "title": "freelance/rules.py: links, contatos, gratuidade, comissão, piso de preço, similaridade",
+      "status": "NOT_STARTED",
+      "description": "freelance/rules.py: links, contatos, gratuidade, comissão, piso de preço, similaridade",
+      "acceptance": "Teste de bloqueio e de liberação para cada regra",
+      "evidence": [],
+      "notes": "",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "Teste de bloqueio e de liberação para cada regra",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F2",
+      "area": "F2 · Triagem e proposta",
+      "title": "Modelos, tarefas de agente e API; perguntas + proposta",
+      "status": "NOT_STARTED",
+      "description": "Modelos, tarefas de agente e API; perguntas + proposta",
+      "acceptance": "5 projetos reais colados; < 60 s; custo registrado",
+      "evidence": [],
+      "notes": "",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "5 projetos reais colados; < 60 s; custo registrado",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F3",
+      "area": "F3 · Interface",
+      "title": "Telas Projetos, Proposta e Resultados no desktop",
+      "status": "NOT_STARTED",
+      "description": "Telas Projetos, Proposta e Resultados no desktop",
+      "acceptance": "Build; screenshots; revisão do dono",
+      "evidence": [],
+      "notes": "",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "Build; screenshots; revisão do dono",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F4",
+      "area": "F4 · Portfólio em PDF",
+      "title": "PDF de trabalhos do dono sem links nem contatos",
+      "status": "NOT_STARTED",
+      "description": "PDF de trabalhos do dono sem links nem contatos",
+      "acceptance": "Verificador aprova o PDF",
+      "evidence": [],
+      "notes": "",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "Verificador aprova o PDF",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F5",
+      "area": "F5 · Medição",
+      "title": "Funil enviadas → respondidas → contratadas",
+      "status": "NOT_STARTED",
+      "description": "Funil enviadas → respondidas → contratadas",
+      "acceptance": "Relatório após 30 propostas",
+      "evidence": [],
+      "notes": "",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "Relatório após 30 propostas",
+        "legal": "NA"
+      }
+    },
+    {
+      "id": "FR-F6",
+      "area": "F6 · Botão de captura",
+      "title": "Extensão do Chrome que lê só a página aberta, com clique do dono",
+      "status": "BLOCKED",
+      "description": "Extensão do Chrome que lê só a página aberta, com clique do dono",
+      "acceptance": "BLOCKED",
+      "evidence": [],
+      "notes": "Só após confirmação escrita do Workana de que é permitido.",
+      "validation": {
+        "engineering": "NOT_STARTED",
+        "tests": "NONE",
+        "native": "NA",
+        "code_review": "PENDING",
+        "owner": "PENDING",
+        "external": [],
+        "production": "NA",
+        "pending": "BLOCKED",
+        "legal": "NA"
+      }
+    }
+  ]
+}

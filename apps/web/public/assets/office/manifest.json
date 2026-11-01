@@ -1,0 +1,41 @@
+{
+  "generator": "scripts/build_office_assets.mjs",
+  "units": "metros, origem no chão",
+  "assets": {
+    "desk": {
+      "file": "desk.glb",
+      "bytes": 9484,
+      "triangles": 60,
+      "sha256": "9e78ef02dfe082f58b5cd8c65c2821e713adc0df63e74e01e2713cf2bb401950",
+      "source": "procedural (substituível por arte do Blender)"
+    },
+    "chair": {
+      "file": "chair.glb",
+      "bytes": 11016,
+      "triangles": 112,
+      "sha256": "9c4a7417d2301006089673605bafdcd0a6d03c0be8d4a83921675949b3406c42",
+      "source": "procedural (substituível por arte do Blender)"
+    },
+    "monitor": {
+      "file": "monitor.glb",
+      "bytes": 7924,
+      "triangles": 48,
+      "sha256": "6d87db8790d0884c7a56f0e8b1475cc67b48e1e1aa45712281a67bc82315d525",
+      "source": "procedural (substituível por arte do Blender)"
+    },
+    "plant": {
+      "file": "plant.glb",
+      "bytes": 12772,
+      "triangles": 128,
+      "sha256": "8ed9edfb97aaf79b50ea5738c8b097678e705f86693f5dbd7cf3b88e88b6c995",
+      "source": "procedural (substituível por arte do Blender)"
+    },
+    "shelf": {
+      "file": "shelf.glb",
+      "bytes": 20768,
+      "triangles": 132,
+      "sha256": "ce2a8d824279b204c9d2b714b4a3ea8c15ba74c2fae0f0d4edaf0a84d6df724d",
+      "source": "procedural (substituível por arte do Blender)"
+    }
+  }
+}

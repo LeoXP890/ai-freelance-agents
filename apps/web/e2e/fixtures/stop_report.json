@@ -1,0 +1,56 @@
+{
+ "active": true,
+ "reason": "teste de emergência",
+ "activated_by": "u",
+ "activated_at": "2026-10-24T13:00:00+00:00",
+ "released_at": null,
+ "revoked_delegations": [
+  "PAUSE_MEDIA"
+ ],
+ "pauses": [
+  {
+   "kind": "LISTING",
+   "subject_id": "11111111-aaaa-4000-8000-000000000001",
+   "channel": "WOOCOMMERCE",
+   "proposal_id": "p1",
+   "requested_status": "AUTHORIZED",
+   "proposal_status": "SUCCEEDED",
+   "job_status": "SUCCEEDED",
+   "outcome": "CONFIRMADA"
+  },
+  {
+   "kind": "LISTING",
+   "subject_id": "11111111-aaaa-4000-8000-000000000002",
+   "channel": "MERCADO_LIVRE",
+   "proposal_id": "p2",
+   "requested_status": "AUTHORIZED",
+   "proposal_status": "FAILED",
+   "job_status": "FAILED",
+   "outcome": "FALHOU"
+  },
+  {
+   "kind": "CAMPAIGN",
+   "subject_id": "00000000-0000-4000-8000-000000000001",
+   "channel": "mock-ads",
+   "proposal_id": "p3",
+   "requested_status": "PENDING_APPROVAL",
+   "proposal_status": "PENDING_APPROVAL",
+   "job_status": null,
+   "outcome": "PENDENTE"
+  }
+ ],
+ "pause_counts": {
+  "CONFIRMADA": 1,
+  "PENDENTE": 1,
+  "FALHOU": 1
+ },
+ "all_paused": false,
+ "frozen_jobs": [
+  {
+   "action_type": "PUBLISH_LISTING",
+   "status": "QUEUED"
+  }
+ ],
+ "spend_since_stop_minor": 1840,
+ "note": "Gasto após o stop é o que a plataforma já tinha realizado (importado), não nova despesa autorizada."
+}

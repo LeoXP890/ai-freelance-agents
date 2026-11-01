@@ -1,0 +1,6 @@
+# Staging runs alongside production, but only through an SSH tunnel.
+# No 80/443 binding, no Let's Encrypt, no external network exposure.
+# All containers/volumes are named with AIC_STACK=staging in base compose.
+services:
+  reverse-proxy:
+    ports: !override ["127.0.0.1:${AIC_HTTP_PORT:-8081}:8080"]

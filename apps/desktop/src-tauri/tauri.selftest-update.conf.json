@@ -1,0 +1,26 @@
+{
+  "app": {
+    "windows": [
+      {
+        "title": "AI Commerce",
+        "width": 1200,
+        "height": 800,
+        "url": "index.html?selftest=http://127.0.0.1:9777&mode=update",
+        "alwaysOnTop": true
+      }
+    ],
+    "security": {
+      "csp": {
+        "default-src": "'self'",
+        "script-src": "'self'",
+        "style-src": "'self' 'unsafe-inline'",
+        "img-src": "'self' data: blob:",
+        "font-src": "'self' data:",
+        "connect-src": "'self' http://localhost:8080 ws://localhost:8080 http://127.0.0.1:9777"
+      },
+      "capabilities": [
+        "default"
+      ]
+    }
+  }
+}

@@ -1,0 +1,183 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "layout": {
+      "contentSize": "760px",
+      "wideSize": "1280px"
+    },
+    "color": {
+      "palette": [
+        {
+          "slug": "canvas",
+          "name": "Fundo",
+          "color": "#F8F8F6"
+        },
+        {
+          "slug": "surface",
+          "name": "Superfície",
+          "color": "#FFFFFF"
+        },
+        {
+          "slug": "ink",
+          "name": "Texto",
+          "color": "#181A20"
+        },
+        {
+          "slug": "muted",
+          "name": "Secundário",
+          "color": "#616873"
+        },
+        {
+          "slug": "accent",
+          "name": "Destaque",
+          "color": "#3454D1"
+        },
+        {
+          "slug": "line",
+          "name": "Bordas",
+          "color": "#DCDDD8"
+        }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "slug": "system",
+          "name": "Sistema",
+          "fontFamily": "-apple-system, BlinkMacSystemFont, \"Segoe UI\", sans-serif"
+        },
+        {
+          "slug": "editorial",
+          "name": "Editorial",
+          "fontFamily": "Georgia, \"Times New Roman\", serif"
+        }
+      ],
+      "fontSizes": [
+        {
+          "slug": "small",
+          "name": "small",
+          "size": "0.875rem"
+        },
+        {
+          "slug": "medium",
+          "name": "medium",
+          "size": "1rem"
+        },
+        {
+          "slug": "large",
+          "name": "large",
+          "size": "1.35rem"
+        },
+        {
+          "slug": "x-large",
+          "name": "x-large",
+          "size": "clamp(2rem,4vw,3.25rem)"
+        },
+        {
+          "slug": "display",
+          "name": "display",
+          "size": "clamp(3rem,6vw,5.5rem)"
+        }
+      ]
+    },
+    "spacing": {
+      "units": [
+        "px",
+        "rem",
+        "vw",
+        "%"
+      ],
+      "spacingSizes": [
+        {
+          "slug": "0",
+          "name": "8px",
+          "size": "8px"
+        },
+        {
+          "slug": "1",
+          "name": "16px",
+          "size": "16px"
+        },
+        {
+          "slug": "2",
+          "name": "24px",
+          "size": "24px"
+        },
+        {
+          "slug": "3",
+          "name": "40px",
+          "size": "40px"
+        },
+        {
+          "slug": "4",
+          "name": "64px",
+          "size": "64px"
+        },
+        {
+          "slug": "5",
+          "name": "96px",
+          "size": "96px"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var:preset|color|canvas",
+      "text": "var:preset|color|ink"
+    },
+    "typography": {
+      "fontFamily": "var:preset|font-family|system",
+      "fontSize": "16px",
+      "lineHeight": "1.6"
+    },
+    "spacing": {
+      "blockGap": "24px"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontWeight": "500",
+          "lineHeight": "1.08",
+          "letterSpacing": "-0.045em"
+        }
+      },
+      "link": {
+        "color": {
+          "text": "var:preset|color|ink"
+        }
+      },
+      "button": {
+        "color": {
+          "background": "var:preset|color|accent",
+          "text": "#ffffff"
+        },
+        "border": {
+          "radius": "8px"
+        },
+        "spacing": {
+          "padding": {
+            "top": "14px",
+            "bottom": "14px",
+            "left": "24px",
+            "right": "24px"
+          }
+        }
+      }
+    }
+  },
+  "templateParts": [
+    {
+      "name": "header",
+      "title": "Cabeçalho",
+      "area": "header"
+    },
+    {
+      "name": "footer",
+      "title": "Rodapé",
+      "area": "footer"
+    }
+  ]
+}

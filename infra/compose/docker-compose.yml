@@ -1,0 +1,163 @@
+# AI Commerce — stack local/staging. Ambientes separados por arquivo de env (infra/env/*.env).
+# Uso: docker compose -f infra/compose/docker-compose.yml --env-file infra/env/dry_run.env up -d
+name: aicommerce-${AIC_STACK:-dryrun}
+
+x-api-env: &api-env
+  AIC_ENVIRONMENT: ${AIC_ENVIRONMENT:-local}
+  AIC_MODE: ${AIC_MODE:-DRY_RUN}
+  AIC_DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-aicommerce}:${POSTGRES_PASSWORD:-aicommerce}@postgres:5432/${POSTGRES_DB:-aicommerce}
+  AIC_JWT_SECRET: ${AIC_JWT_SECRET:?defina AIC_JWT_SECRET no arquivo de env}
+  AIC_SEED_DEMO_USERS: ${AIC_SEED_DEMO_USERS:-false}
+  AIC_CORS_ORIGINS: '["${AIC_WEB_ORIGIN:-http://localhost:3000}","tauri://localhost","http://tauri.localhost"]'  # web + app desktop (Tauri)
+  AIC_REDIS_URL: redis://redis:6379/0
+  # IA dos agentes: mock (padrão, sem custo) até a produção; "google" usa o Gemini com a chave do proprietário
+  AIC_LLM_PROVIDER: ${AIC_LLM_PROVIDER:-mock}
+  AIC_GOOGLE_API_KEY: ${AIC_GOOGLE_API_KEY:-}
+  # Pesquisa externa somente de leitura; padrão desabilitado.
+  AIC_RESEARCH_TREND_SOURCE: ${AIC_RESEARCH_TREND_SOURCE:-mock}
+  AIC_RESEARCH_ML_ACCESS_TOKEN: ${AIC_RESEARCH_ML_ACCESS_TOKEN:-}
+  AIC_RESEARCH_WEB_SOURCE: ${AIC_RESEARCH_WEB_SOURCE:-none}
+  AIC_RESEARCH_BRAVE_API_KEY: ${AIC_RESEARCH_BRAVE_API_KEY:-}
+  AIC_RESEARCH_ME_SANDBOX_TOKEN: ${AIC_RESEARCH_ME_SANDBOX_TOKEN:-}
+  AIC_RESEARCH_ME_USER_AGENT: ${AIC_RESEARCH_ME_USER_AGENT:-}
+  AIC_RESEARCH_BRAVE_MONTHLY_CAP: ${AIC_RESEARCH_BRAVE_MONTHLY_CAP:-0}  # Brave é pago: 0 = sem pesquisa web
+  AIC_RESEARCH_ML_TRENDS_DAILY_CAP: ${AIC_RESEARCH_ML_TRENDS_DAILY_CAP:-300}
+  AIC_RESEARCH_ME_SANDBOX_DAILY_CAP: ${AIC_RESEARCH_ME_SANDBOX_DAILY_CAP:-100}
+  AIC_RESEARCH_MIN_INTERVAL_S: ${AIC_RESEARCH_MIN_INTERVAL_S:-1.0}
+  AIC_GOOGLE_MODEL_SMALL: ${AIC_GOOGLE_MODEL_SMALL:-gemini-3.8-flash}
+  AIC_GOOGLE_MODEL_ADVANCED: ${AIC_GOOGLE_MODEL_ADVANCED:-gemini-3.1-pro-preview}
+  AIC_AI_MONTHLY_BUDGET_MICRO_USD: ${AIC_AI_MONTHLY_BUDGET_MICRO_USD:-20000000}
+  AIC_LLM_TRANSIENT_RETRIES: ${AIC_LLM_TRANSIENT_RETRIES:-2}
+  AIC_LLM_RETRY_BACKOFF_S: ${AIC_LLM_RETRY_BACKOFF_S:-1.0}
+  AIC_KB_EMBEDDER: ${AIC_KB_EMBEDDER:-hashing}  # "google" = busca semântica (exige a chave do Gemini)
+  AIC_ALLOW_PAID_AI: ${AIC_ALLOW_PAID_AI:-false}  # local/teste: IA paga só com "sim" explícito; CI: nunca
+  AIC_RESEARCH_GEMINI_DAILY_CAP: ${AIC_RESEARCH_GEMINI_DAILY_CAP:-30}
+  AIC_RESEARCH_GEMINI_MODEL: ${AIC_RESEARCH_GEMINI_MODEL:-gemini-3.8-flash}
+  AIC_ML_READONLY_VAULT: ${AIC_ML_READONLY_VAULT:-}
+  AIC_DROPI_SESSION_FILE: ${AIC_DROPI_SESSION_FILE:-}
+  AIC_CJ_API_KEY: ${AIC_CJ_API_KEY:-}
+  AIC_CJ_TOKEN_FILE: ${AIC_CJ_TOKEN_FILE:-}
+  AIC_ROBOT_EVIDENCE_DIR: ${AIC_ROBOT_EVIDENCE_DIR:-}
+  AIC_PLATFORM_MIN_PROFIT_MINOR: ${AIC_PLATFORM_MIN_PROFIT_MINOR:-1000}
+  AIC_FUNDING_BALANCE_MAX_AGE_S: ${AIC_FUNDING_BALANCE_MAX_AGE_S:-900}  # leitura de saldo mais velha não paga fornecedor
+  AIC_FUNDING_OPERATING_SOURCE: ${AIC_FUNDING_OPERATING_SOURCE:-}  # vazio = compra ao fornecedor sem exigir caixa
+  AIC_FUNDING_RESERVE_SOURCE: ${AIC_FUNDING_RESERVE_SOURCE:-}
+  AIC_GOOGLE_EMBEDDING_MODEL: ${AIC_GOOGLE_EMBEDDING_MODEL:-gemini-embedding-001}
+  AIC_DB_APP_PASSWORD: ${AIC_DB_APP_PASSWORD:-aicommerce_app_dev}
+  # Segredos de produção (live.env). Os padrões abaixo são os valores de SIMULAÇÃO — em LIVE a API recusa iniciar
+  # com eles, então esquecer de definir falha alto em vez de rodar inseguro. Credencial vazia = não configurada.
+  AIC_PII_KEY: ${AIC_PII_KEY:-c2ltLXBpaS1rZXktZHJ5cnVuLXNvbWVudGUtMzJieSE=}
+  AIC_PII_PREVIOUS_KEYS: ${AIC_PII_PREVIOUS_KEYS:-}  # só durante a troca de chave (runbook)
+  AIC_WOO_WEBHOOK_SECRET: ${AIC_WOO_WEBHOOK_SECRET:-sim-woo-webhook-secret-dryrun}
+  AIC_METRICS_TOKEN: ${AIC_METRICS_TOKEN:-sim-metrics-token-dryrun}
+  AIC_WOO_BASE_URL: ${AIC_WOO_BASE_URL:-}
+  AIC_WOO_CONSUMER_KEY: ${AIC_WOO_CONSUMER_KEY:-}
+  AIC_WOO_CONSUMER_SECRET: ${AIC_WOO_CONSUMER_SECRET:-}
+  AIC_ML_APPLICATION_ID: ${AIC_ML_APPLICATION_ID:-SIM-ML-APP}
+  AIC_ML_CLIENT_SECRET: ${AIC_ML_CLIENT_SECRET:-}
+  AIC_ML_REDIRECT_URI: ${AIC_ML_REDIRECT_URI:-}
+  AIC_PUBLIC_BASE_URL: ${AIC_PUBLIC_BASE_URL:-http://localhost:8080/api}
+
+# API e worker usam o papel de mínimo privilégio (sem posse das tabelas): não alteram schema nem desligam triggers.
+x-app-db: &app-db
+  AIC_DATABASE_URL: postgresql+psycopg://aicommerce_app:${AIC_DB_APP_PASSWORD:-aicommerce_app_dev}@postgres:5432/${POSTGRES_DB:-aicommerce}
+
+services:
+  postgres:
+    restart: unless-stopped
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aicommerce}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aicommerce}
+      POSTGRES_DB: ${POSTGRES_DB:-aicommerce}
+    ports: ["127.0.0.1:${AIC_PG_PORT:-55440}:5432"]  # banco nunca exposto fora da máquina (auditoria A18)
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aicommerce} -d ${POSTGRES_DB:-aicommerce}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    deploy: {resources: {limits: {cpus: "1.0", memory: 1g}}}
+    networks: [data]
+
+  redis:
+    restart: unless-stopped
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:${AIC_REDIS_PORT:-56390}:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+    deploy: {resources: {limits: {cpus: "0.5", memory: 256m}}}
+    networks: [data]
+
+  migrate:
+    build: {context: ../../apps/api, target: base}
+    command: ["sh", "-c", "alembic upgrade head && python -m aicommerce.dbroles && python -m aicommerce.seed"]
+    environment: *api-env
+    depends_on: {postgres: {condition: service_healthy}}
+    networks: [data]
+
+  api:
+    restart: unless-stopped
+    build: {context: ../../apps/api, target: base}
+    environment: {<<: [*app-db, *api-env]}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+      redis: {condition: service_healthy}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request;urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 10s
+      retries: 10
+    deploy: {resources: {limits: {cpus: "1.0", memory: 768m}}}
+    networks: [data, edge]
+
+  worker:
+    restart: unless-stopped
+    build: {context: ../../apps/api, target: base}
+    command: ["python", "-m", "aicommerce.worker"]
+    environment: {<<: [*app-db, *api-env]}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    deploy: {resources: {limits: {cpus: "1.0", memory: 512m}}}
+    networks: [data]
+
+  # Robô de publicação pela plataforma (Dropi) — só sobe com o perfil "robot" (pilha privada). Executa apenas
+  # propostas PUBLISH_VIA_PLATFORM aprovadas, em LIVE, sem parada de emergência.
+  robot:
+    profiles: ["robot"]
+    restart: unless-stopped
+    build: {context: ../../apps/api, target: robot}
+    environment: {<<: [*app-db, *api-env]}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    deploy: {resources: {limits: {cpus: "1.0", memory: 1g}}}
+    shm_size: 256m
+    networks: [data]
+
+  web:
+    restart: unless-stopped
+    build:
+      context: ../../apps/web
+      args: {NEXT_PUBLIC_API_URL: "${AIC_PUBLIC_API_URL:-http://localhost:8080/api}"}
+    deploy: {resources: {limits: {cpus: "0.5", memory: 512m}}}
+    networks: [edge]
+
+  reverse-proxy:
+    restart: unless-stopped
+    image: caddy:2.10-alpine
+    # local/simulação: só no loopback (antes ficava em 0.0.0.0 e a rede local alcançava a API com usuários demo).
+    # Para expor de propósito numa máquina de testes: AIC_HTTP_BIND=0.0.0.0. Produção (80/443) e staging (loopback)
+    # sobrescrevem estas portas nos seus arquivos.
+    ports: ["${AIC_HTTP_BIND:-127.0.0.1}:${AIC_HTTP_PORT:-8080}:8080"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro"]
+    depends_on: [api, web]
+    networks: [edge]
+
+volumes:
+  pgdata: {}
+
+networks:
+  data: {internal: false}
+  edge: {}

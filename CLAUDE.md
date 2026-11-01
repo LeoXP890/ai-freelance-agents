@@ -1,0 +1,1 @@
+Leia e cumpra `AGENTS.md` e `docs/plano/PLANO_FREELANCE_COM_AGENTES.md`. A atualização do checklist HTML ao fim de cada run é OBRIGATÓRIA (`python3 scripts/update_progress.py --end-run --summary "..." --tests "..."`).

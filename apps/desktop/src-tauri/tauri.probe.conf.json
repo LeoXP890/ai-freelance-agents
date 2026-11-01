@@ -1,0 +1,7 @@
+{
+  "app": {
+    "windows": [{ "title": "AI Commerce — diagnóstico WebGL", "width": 1366, "height": 768, "url": "probe.html?report=http://127.0.0.1:9777/report" }],
+    "security": { "csp": { "default-src": "'self'", "script-src": "'self'", "style-src": "'self' 'unsafe-inline'",
+      "img-src": "'self' data: blob:", "connect-src": "'self' http://127.0.0.1:9777" } }
+  }
+}

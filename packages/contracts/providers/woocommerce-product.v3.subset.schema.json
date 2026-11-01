@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WooCommerceProductV3Subset",
+  "description": "Subconjunto do recurso Product da WooCommerce REST API v3 usado pelo AI Commerce (campos e tipos conforme a documentação pública: preços, peso e dimensões são strings). Não substitui o teste de homologação CH-WOO.",
+  "type": "object",
+  "required": ["name", "type", "status", "regular_price", "sku", "manage_stock", "stock_quantity", "meta_data"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {"type": "string", "minLength": 1, "maxLength": 200},
+    "type": {"enum": ["simple"]},
+    "status": {"enum": ["draft", "pending", "private", "publish"]},
+    "regular_price": {"type": "string", "pattern": "^[0-9]+\\.[0-9]{2}$"},
+    "sku": {"type": "string", "minLength": 1},
+    "description": {"type": "string"},
+    "short_description": {"type": "string"},
+    "manage_stock": {"type": "boolean"},
+    "stock_quantity": {"type": "integer", "minimum": 0},
+    "weight": {"type": "string", "pattern": "^[0-9]+(\\.[0-9]+)?$"},
+    "dimensions": {
+      "type": "object", "additionalProperties": false, "required": ["length", "width", "height"],
+      "properties": {"length": {"type": "string"}, "width": {"type": "string"}, "height": {"type": "string"}}
+    },
+    "images": {"type": "array", "items": {"type": "object", "required": ["src"], "properties": {"src": {"type": "string"}}}},
+    "meta_data": {
+      "type": "array",
+      "items": {"type": "object", "required": ["key", "value"], "properties": {"key": {"type": "string"}, "value": {}}}
+    }
+  }
+}

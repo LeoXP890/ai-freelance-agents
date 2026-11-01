@@ -1,0 +1,650 @@
+{
+ "uid": "aicommerce-ops",
+ "title": "AI Commerce — Operação",
+ "tags": [
+  "aicommerce"
+ ],
+ "timezone": "browser",
+ "schemaVersion": 39,
+ "version": 1,
+ "refresh": "30s",
+ "time": {
+  "from": "now-3h",
+  "to": "now"
+ },
+ "panels": [
+  {
+   "id": 1,
+   "type": "stat",
+   "title": "API",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "up{job=\"aicommerce-api\"}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "FORA",
+         "color": "red"
+        },
+        "1": {
+         "text": "OK",
+         "color": "green"
+        }
+       }
+      }
+     ],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 2,
+   "type": "stat",
+   "title": "Banco",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 4,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_db_up",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "FORA",
+         "color": "red"
+        },
+        "1": {
+         "text": "OK",
+         "color": "green"
+        }
+       }
+      }
+     ],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "red",
+        "value": null
+       },
+       {
+        "color": "green",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 3,
+   "type": "stat",
+   "title": "Worker — último ciclo",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 8,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_worker_heartbeat_age_seconds",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "orange",
+        "value": 60
+       },
+       {
+        "color": "red",
+        "value": 120
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 4,
+   "type": "stat",
+   "title": "Kill switch",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_emergency_stop_active",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "mappings": [
+      {
+       "type": "value",
+       "options": {
+        "0": {
+         "text": "desligado",
+         "color": "green"
+        },
+        "1": {
+         "text": "ATIVO",
+         "color": "red"
+        }
+       }
+      }
+     ],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 5,
+   "type": "stat",
+   "title": "Alertas críticos",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 16,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_alerts{severity=\"CRITICAL\"}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 6,
+   "type": "stat",
+   "title": "IA no mês (US$)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 20,
+    "y": 0,
+    "w": 4,
+    "h": 4
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_ai_month_spend_micro_usd / 1e6",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "none"
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "currencyUSD",
+     "mappings": [],
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   }
+  },
+  {
+   "id": 7,
+   "type": "timeseries",
+   "title": "Requisições por status (req/s)",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (status) (rate(aic_http_requests_total[5m]))",
+     "legendFormat": "{{status}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  },
+  {
+   "id": 8,
+   "type": "timeseries",
+   "title": "Latência p95 por rota",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 4,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "histogram_quantile(0.95, sum by (le, route) (rate(aic_http_request_duration_seconds_bucket[5m])))",
+     "legendFormat": "{{route}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  },
+  {
+   "id": 9,
+   "type": "timeseries",
+   "title": "Jobs de execução por estado",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 12,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_execution_jobs",
+     "legendFormat": "{{status}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  },
+  {
+   "id": 10,
+   "type": "timeseries",
+   "title": "Fila: job pendente mais antigo",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 12,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_execution_queue_oldest_seconds",
+     "legendFormat": "mais antigo",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  },
+  {
+   "id": 11,
+   "type": "timeseries",
+   "title": "Pedidos por estado",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 0,
+    "y": 20,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_orders",
+     "legendFormat": "{{status}}",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  },
+  {
+   "id": 12,
+   "type": "timeseries",
+   "title": "Webhooks pendentes",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "aic-prometheus"
+   },
+   "gridPos": {
+    "x": 12,
+    "y": 20,
+    "w": 12,
+    "h": 8
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "aic_webhooks_pending",
+     "legendFormat": "pendentes",
+     "datasource": {
+      "type": "prometheus",
+      "uid": "aic-prometheus"
+     }
+    }
+   ],
+   "fieldConfig": {
+    "defaults": {
+     "unit": "none",
+     "custom": {
+      "lineWidth": 2
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom",
+     "showLegend": true
+    },
+    "tooltip": {
+     "mode": "multi"
+    }
+   }
+  }
+ ],
+ "description": "DRY_RUN local: dados simulados. Painéis espelham docs/runbook/operacao.md."
+}

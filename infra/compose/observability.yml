@@ -1,0 +1,62 @@
+# Observabilidade local (INF-005): Prometheus + Grafana, ligados à rede "edge" do stack principal (só a API).
+name: aicommerce-observability
+
+services:
+  prometheus:
+    image: prom/prometheus:v3.15.0
+    command: ["--config.file=/etc/prometheus/prometheus.yml", "--storage.tsdb.retention.time=15d"]
+    ports: ["127.0.0.1:9090:9090"]
+    networks: [aicommerce]
+    volumes:
+      - ../observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../observability/rules:/etc/prometheus/rules:ro
+      - ../env/metrics_token:/etc/prometheus/secrets/metrics_token:ro
+      - prom-data:/prometheus
+
+  alertmanager:
+    image: prom/alertmanager:v0.34.1
+    command: ["--config.file=/etc/alertmanager/alertmanager.yml", "--storage.path=/alertmanager"]
+    ports: ["127.0.0.1:9093:9093"]
+    networks: [aicommerce]
+    volumes:
+      - ../env/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ../env/secrets:/etc/alertmanager/secrets:ro
+      - am-data:/alertmanager
+
+  # Alertmanager → WhatsApp (API oficial da Meta). Reusa a imagem da API; modo "dry" até haver credenciais.
+  alert-relay:
+    image: aicommerce-dryrun-api:latest
+    command: ["python", "-m", "aicommerce.alert_relay"]
+    networks: [aicommerce]
+    env_file: [../env/alerting.env]
+    environment:
+      AIC_ALERT_RELAY_TOKEN: ${AIC_ALERT_RELAY_TOKEN:?use scripts/observability.sh}
+      AIC_WHATSAPP_TOKEN_FILE: /run/secrets-aic/whatsapp_token
+    volumes:
+      - ../env/secrets:/run/secrets-aic:ro
+
+  grafana:
+    image: grafana/grafana:13.2.3
+    depends_on: [prometheus]
+    ports: ["127.0.0.1:3001:3000"]
+    networks: [aicommerce]
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?gere com scripts/observability.sh up}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    volumes:
+      - ../observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+
+networks:
+  aicommerce:
+    external: true
+    name: aicommerce-${AIC_STACK:-dryrun}_edge  # rede da stack monitorada (dryrun local; live na VPS)
+
+volumes:
+  am-data:
+  prom-data:
+  grafana-data:

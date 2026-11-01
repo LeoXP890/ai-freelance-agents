@@ -1,0 +1,139 @@
+{
+  "$defs": {
+    "AgentState": {
+      "enum": [
+        "IDLE",
+        "PLANNING",
+        "WORKING",
+        "TOOL_CALL",
+        "WAITING_APPROVAL",
+        "BLOCKED",
+        "COMPLETED",
+        "ERROR"
+      ],
+      "title": "AgentState",
+      "type": "string"
+    },
+    "PresenceV1": {
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": {
+          "title": "Agent Id",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "role": {
+          "title": "Role",
+          "type": "string"
+        },
+        "room": {
+          "title": "Room",
+          "type": "string"
+        },
+        "color": {
+          "title": "Color",
+          "type": "string"
+        },
+        "appearance": {
+          "additionalProperties": true,
+          "title": "Appearance",
+          "type": "object"
+        },
+        "state": {
+          "$ref": "#/$defs/AgentState"
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Task Id"
+        },
+        "last_seq": {
+          "title": "Last Seq",
+          "type": "integer"
+        },
+        "last_event_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Last Event At"
+        }
+      },
+      "required": [
+        "agent_id",
+        "name",
+        "role",
+        "room",
+        "color",
+        "state",
+        "task_id",
+        "last_seq"
+      ],
+      "title": "PresenceV1",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "as_of_seq": {
+      "description": "Reconectar com after_seq=as_of_seq",
+      "minimum": 0,
+      "title": "As Of Seq",
+      "type": "integer"
+    },
+    "mode": {
+      "enum": [
+        "DRY_RUN",
+        "LIVE"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "simulated": {
+      "title": "Simulated",
+      "type": "boolean"
+    },
+    "emergency_stop": {
+      "title": "Emergency Stop",
+      "type": "boolean"
+    },
+    "agents": {
+      "items": {
+        "$ref": "#/$defs/PresenceV1"
+      },
+      "title": "Agents",
+      "type": "array"
+    }
+  },
+  "required": [
+    "as_of_seq",
+    "mode",
+    "simulated",
+    "emergency_stop",
+    "agents"
+  ],
+  "title": "PresenceSnapshotV1",
+  "type": "object"
+}

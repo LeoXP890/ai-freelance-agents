@@ -1,0 +1,35 @@
+# Pilha PRIVADA na VPS do proprietário: IA real, acesso só por túnel SSH (loopback), sem 80/443 e sem tocar no
+# proxy/Traefik de outros sistemas. Imagens montadas no Mac (linux/amd64) e carregadas na VPS — a VPS não compila.
+# Uso: scripts/deploy_private.sh (no Mac). Acesso: ssh -L 8082:127.0.0.1:8082 <vps> → app em http://localhost:8082
+# Limites de memória: os do compose base (deploy.resources) valem aqui também.
+services:
+  migrate:
+    image: aicommerce-api:private
+    pull_policy: never
+  api:
+    image: aicommerce-api:private
+    pull_policy: never
+    # Cofre do OAuth SOMENTE LEITURA do Mercado Livre (0700/0600, dono uid 10001): ferramentas dos agentes.
+    volumes: ["../env/ml-readonly:/run/aicommerce/ml-readonly", "../env/dropi:/run/aicommerce/dropi:ro", "../env/cj:/run/aicommerce/cj"]
+    environment: {AIC_ML_READONLY_VAULT: /run/aicommerce/ml-readonly, AIC_DROPI_SESSION_FILE: /run/aicommerce/dropi/session.json, AIC_CJ_TOKEN_FILE: /run/aicommerce/cj/token.json}
+  worker:
+    image: aicommerce-api:private
+    pull_policy: never
+    volumes: ["../env/ml-readonly:/run/aicommerce/ml-readonly", "../env/dropi:/run/aicommerce/dropi:ro", "../env/cj:/run/aicommerce/cj"]
+    environment: {AIC_ML_READONLY_VAULT: /run/aicommerce/ml-readonly, AIC_DROPI_SESSION_FILE: /run/aicommerce/dropi/session.json, AIC_CJ_TOKEN_FILE: /run/aicommerce/cj/token.json}
+  web:
+    image: aicommerce-web:private
+    pull_policy: never
+  reverse-proxy:
+    ports: !override ["127.0.0.1:${AIC_HTTP_PORT:-8082}:8080"]
+  robot:
+    image: aicommerce-robot:private
+    pull_policy: never
+    volumes:
+      - "../env/ml-readonly:/run/aicommerce/ml-readonly"
+      - "../env/dropi:/run/aicommerce/dropi:ro"
+      - "../../data/robot:/run/aicommerce/robot"
+    environment:
+      AIC_ML_READONLY_VAULT: /run/aicommerce/ml-readonly
+      AIC_DROPI_SESSION_FILE: /run/aicommerce/dropi/session.json
+      AIC_ROBOT_EVIDENCE_DIR: /run/aicommerce/robot

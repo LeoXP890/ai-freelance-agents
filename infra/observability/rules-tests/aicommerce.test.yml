@@ -1,0 +1,58 @@
+# Testes das regras (promtool test rules). Rodam no CI sem stack.
+rule_files: [../rules/aicommerce.yml]
+evaluation_interval: 15s
+tests:
+  - interval: 15s
+    input_series:
+      - series: 'aic_worker_heartbeat_age_seconds'
+        values: '5 20 40 60 80 100 125 140 155 170 185 200 215'
+      - series: 'up{job="aicommerce-api"}'
+        values: '1 1 0 0 0 0 0 0'
+    alert_rule_test:
+      - eval_time: 1m
+        alertname: AicWorkerDown
+        exp_alerts: []
+      - eval_time: 3m
+        alertname: AicWorkerDown
+        exp_alerts:
+          - exp_labels: {severity: critical}
+            exp_annotations:
+              summary: "Worker sem ciclo há 3m 35s: execução, fiscal e webhooks parados"
+              runbook: "operacao.md §4 WORKER_DOWN"
+      - eval_time: 1m45s
+        alertname: AicApiDown
+        exp_alerts:
+          - exp_labels: {severity: critical, job: aicommerce-api}
+            exp_annotations:
+              summary: API fora do ar (scrape falhando)
+              runbook: "operacao.md §4 — docker compose ps api; logs api"
+  - interval: 15s
+    input_series:
+      - series: 'aic_db_up'
+        values: '1 1 0 0 0 0 1'
+      - series: 'aic_http_requests_total{route="/v1/x",status="503",method="GET"}'
+        values: '0+10x40'
+      - series: 'aic_http_requests_total{route="/v1/x",status="200",method="GET"}'
+        values: '0+10x40'
+    alert_rule_test:
+      - eval_time: 30s
+        alertname: AicDatabaseUnavailable
+        exp_alerts: []
+      - eval_time: 1m15s
+        alertname: AicDatabaseUnavailable
+        exp_alerts:
+          - exp_labels: {severity: critical}
+            exp_annotations:
+              summary: Banco indisponível para a API (respostas 503 DB_UNAVAILABLE)
+              runbook: "operacao.md §4 — 503 DB_UNAVAILABLE"
+      - eval_time: 1m45s
+        alertname: AicDatabaseUnavailable
+        exp_alerts: []
+      - eval_time: 4m
+        alertname: AicHttp5xxRate
+        exp_alerts: []
+      - eval_time: 9m
+        alertname: AicHttp5xxRate
+        exp_alerts:
+          - exp_labels: {severity: warning}
+            exp_annotations: {summary: "Mais de 5% de respostas 5xx nos últimos 5 min"}

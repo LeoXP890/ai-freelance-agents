@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "selftest-window",
+  "description": "SOMENTE no build de autoteste (tauri.selftest-window.conf.json): controlar a janela para o cenário E2E 8.",
+  "windows": ["main"],
+  "permissions": ["core:window:allow-minimize", "core:window:allow-unminimize", "core:window:allow-close", "core:window:allow-show",
+    "core:window:allow-set-focus", "core:window:allow-is-minimized", "core:window:allow-is-visible"]
+}

@@ -1,0 +1,1 @@
+{"timestamp": "2026-11-01T20:08:26+00:00", "type": "end_run", "summary": "Fork limpo criado a partir do AI Commerce (sem histórico, sem segredos); plano de transformação escrito.", "tests": "gitleaks dir: só valores de simulação/teste; testes da API não executados", "done": 0, "total": 7}

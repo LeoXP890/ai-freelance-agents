@@ -1,0 +1,118 @@
+name: ci
+on:
+  push: {branches: [main]}
+  pull_request: {}
+permissions: {contents: read}
+concurrency: {group: "ci-${{ github.ref }}", cancel-in-progress: true}
+
+jobs:
+  api:
+    runs-on: ubuntu-24.04
+    # IA SIMULADA sempre (seção 4): a configuração recusa provedor pago com CI=true, mesmo que alguém defina a chave
+    env: {AIC_LLM_PROVIDER: mock, AIC_KB_EMBEDDER: hashing}
+    services:
+      postgres:
+        image: pgvector/pgvector:pg17
+        env: {POSTGRES_USER: aicommerce, POSTGRES_PASSWORD: aicommerce, POSTGRES_DB: aicommerce}
+        ports: ["55440:5432"]
+        options: >-
+          --health-cmd "pg_isready -U aicommerce" --health-interval 5s --health-timeout 3s --health-retries 20
+    defaults: {run: {working-directory: apps/api}}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with: {version: "0.12.13"}
+      - run: uv sync --frozen --python 3.12
+      - name: auditoria de dependências (pip-audit)
+        run: uv export --frozen --no-dev --no-hashes --no-emit-project > /tmp/req.txt && uvx --python 3.12 pip-audit -r /tmp/req.txt
+      - run: uv run ruff check src tests migrations
+      - run: uv run ruff format --check src tests
+      - run: uv run pytest --junitxml=../../progress/test-reports/api-junit.xml
+      - name: banco de avaliação (migrações + seed de referência)
+        run: uv run alembic upgrade head && uv run python -m aicommerce.seed
+      - run: uv run python -m aicommerce.ai.evals --report ../../progress/test-reports/ai_eval.json
+      # auditoria dos 13 agentes: roda dentro do pytest (tests/test_agent_audit.py), que cria pelo fluxo real os dados de
+      # que as tarefas precisam (anúncio, pedido, missão) e grava progress/test-reports/agents_audit.json
+      - name: qualidade de recuperação da base de conhecimento (gabarito)
+        run: uv run python -m aicommerce.ai.kb_eval --report ../../progress/test-reports/kb_eval.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        if: always()
+        with: {name: api-junit, path: progress/test-reports/api-junit.xml}
+
+  web:
+    runs-on: ubuntu-24.04
+    defaults: {run: {working-directory: apps/web}}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
+        with: {node-version: "24", cache: npm, cache-dependency-path: apps/web/package-lock.json}
+      - run: npm ci --no-fund
+      - run: npm audit --audit-level=high
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  progress:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - run: python3 scripts/update_progress.py --validate
+
+  compose:
+    runs-on: ubuntu-24.04
+    needs: [api, web]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+      - name: staging seguro — secrets, DRY_RUN e sem portas públicas
+        run: |
+          python3 scripts/staging_preflight.py --init --file /tmp/aicommerce-staging.env
+          python3 scripts/staging_preflight.py --check --file /tmp/aicommerce-staging.env
+          env -i HOME="$HOME" PATH="$PATH" docker compose \
+            -f infra/compose/docker-compose.yml \
+            -f infra/compose/staging.yml \
+            --env-file /tmp/aicommerce-staging.env config --format json | python3 -c '
+          import json, sys
+          j = json.load(sys.stdin)
+          assert j["name"] == "aicommerce-staging"
+          api = j["services"]["api"]["environment"]
+          assert api["AIC_MODE"] == "DRY_RUN" and api["AIC_ENVIRONMENT"] == "staging"
+          assert "aicommerce_staging" in api["AIC_DATABASE_URL"]
+          ports = j["services"]["reverse-proxy"]["ports"]
+          assert len(ports) == 1 and ports[0]["host_ip"] == "127.0.0.1"
+          assert str(ports[0]["published"]) == "8081"
+          assert j["services"]["web"]["build"]["args"]["NEXT_PUBLIC_API_URL"] == "http://127.0.0.1:8081/api"
+          '
+      - run: cp infra/env/dry_run.env.example infra/env/dry_run.env
+      - run: docker compose -f infra/compose/docker-compose.yml --env-file infra/env/dry_run.env up -d --build --wait
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7  # v10.2.0
+        with: {version: "0.12.13"}
+      - run: cd apps/api && uv sync --frozen --python 3.12 && uv run python ../../scripts/smoke_stack.py
+      - run: cd apps/api && uv run python ../../scripts/load_test.py --users 10 --requests 120 --ws-samples 10
+      - run: cd apps/api && uv run python ../../scripts/backup.py backup && uv run python ../../scripts/backup.py restore-test
+      - name: caos — queda e volta do Postgres
+        run: cd apps/api && uv run python ../../scripts/chaos_db.py
+      - name: scan das imagens (Trivy — vulnerabilidades corrigíveis e segredos)
+        run: ./scripts/scan_images.sh
+      - name: regras de alerta do Prometheus (promtool)
+        run: |
+          docker run --rm -v "$PWD/infra/observability:/obs" --entrypoint promtool prom/prometheus:v3.15.0 check rules /obs/rules/aicommerce.yml
+          docker run --rm -v "$PWD/infra/observability:/obs" --entrypoint promtool prom/prometheus:v3.15.0 test rules /obs/rules-tests/aicommerce.test.yml
+      - name: configuração do Alertmanager (amtool)
+        run: |
+          cp infra/env/alerting.env.example infra/env/alerting.env
+          python3 scripts/render_alertmanager.py
+          docker run --rm -v "$PWD/infra/env:/cfg:ro" --entrypoint amtool prom/alertmanager:v0.34.1 check-config /cfg/alertmanager.yml
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1  # v7.1.0
+        with: {node-version: "24"}
+      - name: regressão visual e acessibilidade do escritório (Playwright, WebGL por software)
+        run: cd apps/web && npm ci && npx playwright install --with-deps chromium && npx playwright test
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9  # v7.0.2
+        with:
+          name: office-e2e
+          if-no-files-found: ignore
+          path: |
+            apps/web/test-results
+            apps/web/e2e/__screenshots__
+      - if: always()
+        run: docker compose -f infra/compose/docker-compose.yml --env-file infra/env/dry_run.env logs --no-color | tail -200

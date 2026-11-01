@@ -1,0 +1,32 @@
+# Gerado por scripts/observability.sh a partir de infra/env/alerting.env — não editar o arquivo gerado.
+global:
+  resolve_timeout: 5m
+route:
+  receiver: ${DEFAULT_RECEIVER}
+  group_by: [alertname]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 12h
+  routes:
+    - matchers: ['severity="critical"']
+      receiver: ${URGENT_RECEIVER}
+      repeat_interval: 2h
+    - matchers: ['alertname="AicEmergencyStopActive"']
+      receiver: ${URGENT_RECEIVER}
+inhibit_rules:
+  - source_matchers: ['severity="critical"']
+    target_matchers: ['severity="warning"']
+    equal: [alertname]
+receivers:
+  - name: email
+${EMAIL_BLOCK}
+  - name: email_whatsapp
+${EMAIL_BLOCK}
+    webhook_configs:
+      - url: http://alert-relay:9095/alertmanager
+        send_resolved: true
+        max_alerts: 10
+        http_config:
+          authorization:
+            type: Bearer
+            credentials_file: /etc/alertmanager/secrets/relay_token

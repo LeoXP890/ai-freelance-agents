@@ -1,0 +1,35 @@
+{
+  "name": "@aicommerce/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "build:desktop": "AIC_TARGET=desktop NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:8080/api} next build",
+    "dev:desktop": "AIC_TARGET=desktop next dev -p 3210"
+  },
+  "dependencies": {
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.1",
+    "@tauri-apps/api": "2.12.1",
+    "lucide-react": "1.54.0",
+    "next": "16.4.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/node": "24.10.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3",
+    "vitest": "5.0.3"
+  }
+}

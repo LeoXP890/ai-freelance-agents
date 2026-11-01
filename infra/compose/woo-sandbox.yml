@@ -1,0 +1,65 @@
+# Sandbox WooCommerce LOCAL para a PoC de integração (COM-004). Projeto separado do stack principal.
+# WordPress + WooCommerce reais, só em 127.0.0.1. Nada aqui é produção nem conta de cliente.
+name: aicommerce-woo-sandbox
+
+services:
+  woo-db:
+    image: mariadb:11.8.9
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: ${WOO_DB_PASSWORD:?gere com scripts/woo_sandbox.sh up}
+      MARIADB_ROOT_PASSWORD: ${WOO_DB_ROOT_PASSWORD:?gere com scripts/woo_sandbox.sh up}
+    volumes: [woo-db:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      retries: 30
+
+  woo:
+    image: wordpress:7.1.2-php8.3-apache
+    depends_on:
+      woo-db: {condition: service_healthy}
+    ports: ["127.0.0.1:8090:80"]
+    environment:
+      WORDPRESS_DB_HOST: woo-db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${WOO_DB_PASSWORD}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+        define('DISABLE_WP_CRON', false);
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [default, aicommerce]
+    volumes:
+      - woo-html:/var/www/html
+      - ../woo-sandbox/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+
+  woo-cli:
+    image: wordpress:cli-2.12.0-php8.3
+    profiles: [cli]
+    user: "33:33"
+    depends_on: [woo]
+    environment:
+      WORDPRESS_DB_HOST: woo-db
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: ${WOO_DB_PASSWORD}
+      # o wp-config da imagem lê isto em tempo de execução: o CLI precisa do mesmo ambiente "local"
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_ENVIRONMENT_TYPE', 'local');
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    networks: [default, aicommerce]
+    volumes:
+      - woo-html:/var/www/html
+      - ../woo-sandbox/mu-plugins:/var/www/html/wp-content/mu-plugins:ro
+
+# Rede "edge" do stack principal (só o proxy; sem acesso ao banco): webhooks vão direto ao proxy, sem passar pela porta do host.
+networks:
+  aicommerce:
+    external: true
+    name: aicommerce-dryrun_edge
+
+volumes:
+  woo-db:
+  woo-html:
