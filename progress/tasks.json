@@ -1,29 +1,31 @@
 {
   "schema_version": 3,
   "project": "AI Freelance Agents",
-  "last_generated_at": "2026-11-01T20:08:26+00:00",
+  "last_generated_at": "2026-11-01T20:25:33+00:00",
   "tasks": [
     {
       "id": "FR-F0",
       "area": "F0 · Fork limpo",
       "title": "Repositório público sem segredos, CI verde",
-      "status": "IN_PROGRESS",
+      "status": "IN_REVIEW",
       "description": "Repositório público sem segredos, CI verde",
       "acceptance": "make test verde; gitleaks sem achados reais",
       "evidence": [
         "README.md",
-        "docs/plano/PLANO_FREELANCE_COM_AGENTES.md"
+        "docs/plano/PLANO_FREELANCE_COM_AGENTES.md",
+        ".github/workflows/ci.yml",
+        "https://github.com/LeoXP890/ai-freelance-agents/actions/runs/41345777820"
       ],
-      "notes": "01/11/2026: cópia sem histórico publicada; gitleaks: só valores de simulação/teste. Testes ainda não executados neste repositório.",
+      "notes": "01/11/2026: cópia sem histórico publicada; gitleaks: só valores de simulação/teste. Testes ainda não executados neste repositório. CI run 41345777820: api (767 passed), web, compose e progress verdes. Falta revisão do dono.",
       "validation": {
-        "engineering": "PARTIAL",
-        "tests": "NONE",
+        "engineering": "DONE",
+        "tests": "PASS",
         "native": "NA",
         "code_review": "PENDING",
         "owner": "PENDING",
         "external": [],
         "production": "NA",
-        "pending": "make test verde; gitleaks sem achados reais",
+        "pending": "revisão do dono",
         "legal": "NA"
       }
     },
